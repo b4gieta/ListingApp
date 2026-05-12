@@ -1,0 +1,43 @@
+﻿@model List<ListingApp.ViewModels.ListingListItemViewModel>
+
+<h1>Ogłoszenia</h1>
+
+<a asp-controller="Create" asp-action="Index" class="btn btn-primary mb-3">
+    Dodaj ogłoszenie
+</a>
+
+@foreach (var listing in Model)
+{
+    <div style="border:1px solid gray; padding:15px; margin-bottom:15px;">
+
+        <h3>@listing.Title</h3>
+
+        <p>@listing.Description</p>
+
+        <p>
+            <strong>Cena:</strong>
+            @listing.Price zł
+        </p>
+
+        <p>
+            <strong>Lokalizacja:</strong>
+            @listing.Location
+        </p>
+
+        <p>
+            <strong>Kategoria:</strong>
+            @listing.CategoryName
+        </p>
+
+        <p>
+            <strong>Autor:</strong>
+            @listing.Username
+        </p>
+
+        <p>
+            <strong>Dodano:</strong>
+            @listing.CreatedAt
+        </p>
+
+    </div>
+}

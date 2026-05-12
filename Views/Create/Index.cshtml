@@ -1,0 +1,50 @@
+﻿@model ListingApp.ViewModels.CreateListingViewModel
+
+<h1>Dodaj ogłoszenie</h1>
+
+<form asp-action="Index" method="post">
+
+    <div class="mb-3">
+        <label asp-for="Title">Nazwa</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description">Opis</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price">Cena</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Location">Lokalizacja</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId">Kategoria</label>
+
+        <select asp-for="CategoryId"
+                asp-items="Model.Categories"
+                class="form-control">
+        </select>
+
+        <span asp-validation-for="CategoryId"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Dodaj
+    </button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
