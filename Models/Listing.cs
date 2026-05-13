@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ListingApp.Models
 {
@@ -7,19 +6,19 @@ namespace ListingApp.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(200)]
+        [Required(ErrorMessage = "Tytuł jest wymagany")]
+        [StringLength(50, ErrorMessage = "Tytuł nie może przekraczać 50 znaków")]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(5000)]
+        [Required(ErrorMessage = "Opis jest wymagany")]
+        [MaxLength(5000, ErrorMessage = "Opis nie może przekraczać 5000 znaków")]
         public string Description { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Cena jest wymagana")]
         public double Price { get; set; }
 
-        [Required]
-        [MaxLength(200)]
+        [Required(ErrorMessage = "Lokalizacja jest wymagana")]
+        [StringLength(200, ErrorMessage = "Lokalizacja nie może przekraczać 200 znaków")]
         public string Location { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
