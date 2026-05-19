@@ -2,7 +2,7 @@
 
 <h1>Ogłoszenia</h1>
 
-<a asp-controller="Create" asp-action="Index" class="btn btn-primary mb-3">
+<a asp-controller="Listing" asp-action="Create" class="btn btn-primary mb-3">
     Dodaj ogłoszenie
 </a>
 
@@ -10,7 +10,11 @@
 {
     <div style="border:1px solid gray; padding:15px; margin-bottom:15px;">
 
-        <h3>@listing.Title</h3>
+        <a asp-controller="Listing"
+           asp-action="Details"
+           asp-route-id="@listing.Id">
+            @listing.Title
+        </a>
 
         <p>@listing.Description</p>
 
@@ -38,6 +42,29 @@
             <strong>Dodano:</strong>
             @listing.CreatedAt
         </p>
+
+        <div class="mt-3">
+
+            <a asp-controller="Listing"
+               asp-action="Edit"
+               asp-route-id="@listing.Id"
+               class="btn btn-warning">
+                Edytuj
+            </a>
+
+            <form asp-controller="Listing"
+                  asp-action="Delete"
+                  asp-route-id="@listing.Id"
+                  method="post"
+                  style="display:inline;">
+
+                <button type="submit" class="btn btn-danger">
+                    Usuń
+                </button>
+
+            </form>
+
+        </div>
 
     </div>
 }
