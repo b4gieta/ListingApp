@@ -19,6 +19,9 @@ namespace ListingApp.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+
             var vm = new ListingViewModel
             {
                 Categories = _db.Categories
@@ -36,6 +39,9 @@ namespace ListingApp.Controllers
         [HttpPost]
         public IActionResult Create(ListingViewModel vm)
         {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+
             if (!ModelState.IsValid)
             {
                 vm.Categories = _db.Categories
@@ -47,21 +53,11 @@ namespace ListingApp.Controllers
                     .ToList();
 
                 return View(vm);
-            }
+            }            
 
-            var user = _db.Users.FirstOrDefault();
-
-            if (user == null)
-            {
-                user = new User
-                {
-                    Username = "Test",
-                    Email = "test@test.com"
-                };
-
-                _db.Users.Add(user);
-                _db.SaveChanges();
-            }
+            int userId = int.Parse(userIdString);
+            var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null) return RedirectToAction("Auth", "Account");
 
             var listing = new Listing
             {
@@ -70,7 +66,7 @@ namespace ListingApp.Controllers
                 Price = vm.Price,
                 Location = vm.Location,
                 CategoryId = vm.CategoryId,
-                UserId = user.Id,
+                UserId = user.UserId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -82,7 +78,16 @@ namespace ListingApp.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+
             var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
+
+            if (listing.UserId.ToString() != userIdString && userRole != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (listing != null)
             {
@@ -96,6 +101,9 @@ namespace ListingApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+
             var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
 
             if (listing == null) return NotFound();
@@ -123,6 +131,9 @@ namespace ListingApp.Controllers
         [HttpPost]
         public IActionResult Edit(int id, ListingViewModel vm)
         {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+
             if (!ModelState.IsValid)
             {
                 vm.Categories = _db.Categories
@@ -168,7 +179,10 @@ namespace ListingApp.Controllers
                 Description = listing.Description,
                 Price = listing.Price,
                 Location = listing.Location,
-                CategoryId = listing.CategoryId
+                CategoryId = listing.CategoryId,
+                CategoryName = listing.Category.Name,
+                UserId = listing.UserId,
+                Username = listing.User.Login
             };
 
             return View(vm);

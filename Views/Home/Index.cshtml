@@ -2,69 +2,42 @@
 
 <h1>Ogłoszenia</h1>
 
-<a asp-controller="Listing" asp-action="Create" class="btn btn-primary mb-3">
+<a asp-controller="Listing"
+   asp-action="Create"
+   class="btn btn-primary mb-3">
     Dodaj ogłoszenie
 </a>
 
-@foreach (var listing in Model)
-{
-    <div style="border:1px solid gray; padding:15px; margin-bottom:15px;">
+<div class="listing-grid">
 
-        <a asp-controller="Listing"
-           asp-action="Details"
-           asp-route-id="@listing.Id">
-            @listing.Title
-        </a>
-
-        <p>@listing.Description</p>
-
-        <p>
-            <strong>Cena:</strong>
-            @listing.Price zł
-        </p>
-
-        <p>
-            <strong>Lokalizacja:</strong>
-            @listing.Location
-        </p>
-
-        <p>
-            <strong>Kategoria:</strong>
-            @listing.CategoryName
-        </p>
-
-        <p>
-            <strong>Autor:</strong>
-            @listing.Username
-        </p>
-
-        <p>
-            <strong>Dodano:</strong>
-            @listing.CreatedAt
-        </p>
-
-        <div class="mt-3">
+    @foreach (var listing in Model)
+    {
+        <div>
 
             <a asp-controller="Listing"
-               asp-action="Edit"
+               asp-action="Details"
                asp-route-id="@listing.Id"
-               class="btn btn-warning">
-                Edytuj
+               class="listing-card">
+
+                <div class="listing-title">
+                    @listing.Title
+                </div>
+
+                <div class="listing-price">
+                    @listing.Price zł
+                </div>
+
+                <div class="listing-info">
+                    @listing.Location
+                </div>
+
+                <div class="listing-info">
+                    @listing.CategoryName
+                </div>
+
             </a>
 
-            <form asp-controller="Listing"
-                  asp-action="Delete"
-                  asp-route-id="@listing.Id"
-                  method="post"
-                  style="display:inline;">
-
-                <button type="submit" class="btn btn-danger">
-                    Usuń
-                </button>
-
-            </form>
-
         </div>
+    }
 
-    </div>
-}
+</div>

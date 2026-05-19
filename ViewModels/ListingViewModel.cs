@@ -25,6 +25,12 @@ namespace ListingApp.ViewModels
         [Required(ErrorMessage = "Kategoria jest wymagana")]
         public int CategoryId { get; set; }
 
+        public string CategoryName { get; set; } = string.Empty;
+
+        public int UserId { get; set; }
+
+        public string Username { get; set; } = string.Empty;
+
         public List<SelectListItem> Categories { get; set; } = new();
     }
 }
