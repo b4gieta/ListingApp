@@ -1,5 +1,9 @@
 ﻿@model ListingApp.ViewModels.ListingViewModel
 
+@{
+    ViewData["Title"] = "Edytuj " + Model.Title;
+}
+
 <h1>Edytuj ogłoszenie</h1>
 
 <form asp-action="Edit" method="post">

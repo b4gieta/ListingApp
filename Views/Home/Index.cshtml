@@ -1,12 +1,28 @@
 ﻿@model List<ListingApp.ViewModels.ListingListItemViewModel>
 
-<h1>Ogłoszenia</h1>
+@{
+    ViewData["Title"] = "Strona główna";
+}
 
-<a asp-controller="Listing"
-   asp-action="Create"
-   class="btn btn-primary mb-3">
-    Dodaj ogłoszenie
-</a>
+<form method="get" asp-controller="Search" asp-action="Index" class="mb-4">
+
+    <div class="input-group">
+
+        <input type="text"
+               name="query"
+               value="@ViewBag.Query"
+               class="form-control"
+               placeholder="Wpisz tytuł ogłoszenia..." />
+
+        <button type="submit" class="btn btn-primary">
+            Szukaj
+        </button>
+
+    </div>
+
+</form>
+
+<h1>Najnowsze ogłoszenia</h1>
 
 <div class="listing-grid">
 
@@ -33,6 +49,10 @@
 
                 <div class="listing-info">
                     @listing.CategoryName
+                </div>
+
+                <div class="listing-info">
+                    Dodano @listing.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy ")
                 </div>
 
             </a>

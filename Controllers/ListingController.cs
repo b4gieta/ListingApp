@@ -182,7 +182,8 @@ namespace ListingApp.Controllers
                 CategoryId = listing.CategoryId,
                 CategoryName = listing.Category.Name,
                 UserId = listing.UserId,
-                Username = listing.User.Login
+                Username = listing.User.Login,
+                CreatedAt = listing.CreatedAt
             };
 
             return View(vm);

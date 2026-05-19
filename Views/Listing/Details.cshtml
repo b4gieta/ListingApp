@@ -1,5 +1,9 @@
 ﻿@model ListingApp.ViewModels.ListingViewModel
 
+@{
+    ViewData["Title"] = Model.Title;
+}
+
 <h1>@Model.Title</h1>
 
 <p>@Model.Description</p>
@@ -11,6 +15,8 @@
 <p><strong>Kategoria:</strong> @Model.CategoryName</p>
 
 <p><strong>Autor ogłoszenia:</strong> @Model.Username</p>
+
+<p><strong>Data dodania:</strong> @Model.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy")</p>
 
 <div class="mt-3">
 
