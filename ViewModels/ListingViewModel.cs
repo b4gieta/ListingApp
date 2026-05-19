@@ -3,8 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ListingApp.ViewModels
 {
-    public class CreateListingViewModel
+    public class ListingViewModel
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Tytuł jest wymagany")]
         [StringLength(50, ErrorMessage = "Tytuł nie może przekraczać 50 znaków")]
         public string Title { get; set; } = string.Empty;

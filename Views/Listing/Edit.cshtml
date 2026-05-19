@@ -1,8 +1,8 @@
-﻿@model ListingApp.ViewModels.CreateListingViewModel
+﻿@model ListingApp.ViewModels.ListingViewModel
 
-<h1>Dodaj ogłoszenie</h1>
+<h1>Edytuj ogłoszenie</h1>
 
-<form asp-action="Index" method="post">
+<form asp-action="Edit" method="post">
 
     <div class="mb-3">
         <label asp-for="Title">Nazwa</label>
@@ -40,7 +40,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">
-        Dodaj
+        Edytuj
     </button>
 
 </form>
