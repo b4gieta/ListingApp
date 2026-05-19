@@ -1,0 +1,26 @@
+﻿@model List<ListingApp.Models.User>
+
+<h2>Panel Admina - Użytkownicy</h2>
+
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Login</th>
+            <th>Email</th>
+            <th>Rola</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.Login</td>
+                <td>@user.Email</td>
+                <td>@user.UserRole</td>
+            </tr>
+        }
+    </tbody>
+</table>

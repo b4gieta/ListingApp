@@ -54,8 +54,10 @@ namespace ListingApp.Controllers
             {
                 user = new User
                 {
-                    Username = "Test",
-                    Email = "test@test.com"
+                    Login = "Test",
+                    Email = "test@test.com",
+                    Password = "TEMP",
+                    UserRole = Role.Admin
                 };
 
                 _db.Users.Add(user);
@@ -70,7 +72,7 @@ namespace ListingApp.Controllers
                 Price = vm.Price,
                 Location = vm.Location,
                 CategoryId = vm.CategoryId,
-                UserId = user.Id,
+                UserId = user.UserId,
                 CreatedAt = DateTime.UtcNow
             };
 

@@ -1,0 +1,63 @@
+﻿@model ListingApp.ViewModels.LoginViewModel
+
+@{
+    var registerModel = new ListingApp.ViewModels.RegisterViewModel();
+}
+
+<h2>Logowanie / Rejestracja</h2>
+
+<button type="button" onclick="showLogin()">Zaloguj</button>
+<button type="button" onclick="showRegister()">Zarejestruj</button>
+
+<hr />
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color:red">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<!-- LOGIN -->
+<div id="loginBox">
+    <form asp-action="Login" method="post">
+
+        <input asp-for="Login" placeholder="Login" />
+        <span asp-validation-for="Login"></span>
+
+        <input asp-for="Password" type="password" placeholder="Hasło" />
+        <span asp-validation-for="Password"></span>
+
+        <button type="submit">Zaloguj</button>
+    </form>
+</div>
+
+<!-- REGISTER -->
+<div id="registerBox" style="display:none">
+
+    <form asp-action="Register" method="post">
+
+        <input name="Login" placeholder="Login" />
+        <input name="Email" placeholder="Email" />
+        <input name="Password" type="password" placeholder="Hasło" />
+        <input name="ConfirmPassword" type="password" placeholder="Powtórz hasło" />
+
+        <button type="submit">Zarejestruj</button>
+
+    </form>
+</div>
+
+<script>
+    function showLogin() {
+        document.getElementById("loginBox").style.display = "block";
+        document.getElementById("registerBox").style.display = "none";
+    }
+
+    function showRegister() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("registerBox").style.display = "block";
+    }
+</script>

@@ -10,8 +10,19 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
+
+// konto uzytkownika do testowania L: Test H: Test123!   
+// konto administratora do testowania L: Admin H: Admin123!
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -28,6 +39,14 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges();
     }
+
+    var user = db.Users.FirstOrDefault(u => u.Login == "Admin");
+
+    if (user != null)
+    {
+        user.UserRole = Role.Admin;
+        db.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -38,6 +57,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

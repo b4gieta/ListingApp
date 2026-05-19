@@ -32,7 +32,7 @@ namespace ListingApp.Controllers
                     Price = a.Price,
                     Location = a.Location,
                     CategoryName = a.Category.Name,
-                    Username = a.User.Username,
+                    Username = a.User.Login,
                     CreatedAt = a.CreatedAt
                 })
                 .ToList();
