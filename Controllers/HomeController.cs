@@ -28,7 +28,6 @@ namespace ListingApp.Controllers
                 {
                     Id = a.Id,
                     Title = a.Title,
-                    Description = a.Description,
                     Price = a.Price,
                     Location = a.Location,
                     CategoryName = a.Category.Name,

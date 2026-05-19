@@ -32,5 +32,7 @@ namespace ListingApp.ViewModels
         public string Username { get; set; } = string.Empty;
 
         public List<SelectListItem> Categories { get; set; } = new();
+
+        public DateTime CreatedAt { get; set; }
     }
 }

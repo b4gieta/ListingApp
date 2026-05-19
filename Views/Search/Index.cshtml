@@ -1,0 +1,146 @@
+﻿@model List<ListingApp.ViewModels.ListingListItemViewModel>
+
+@{
+    if (ViewBag.Query != null)
+    {
+        ViewData["Title"] = $"Wyniki wyszukiwania dla \"{ViewBag.Query}\"";
+    }
+	else
+    {
+        ViewData["Title"] = "Wyszukiwanie ogłoszeń";
+    }
+}
+
+<form method="get" asp-controller="Search" asp-action="Index" class="mb-4">
+
+    <div class="row g-3">
+
+        <div class="input-group">
+
+            <input type="text"
+                   name="query"
+                   value="@ViewBag.Query"
+                   class="form-control"
+                   placeholder="Wpisz tytuł ogłoszenia..." />
+
+            <button type="submit" class="btn btn-primary">
+                Szukaj
+            </button>
+
+        </div>
+
+        <div class="col-md-2">
+            <select name="categoryId" class="form-select">
+
+                <option value="">
+                    Wszystkie kategorie
+                </option>
+
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.Value"
+                            selected="@(ViewBag.CategoryId?.ToString() == category.Value)">
+                        @category.Text
+                    </option>
+                }
+
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <input type="number"
+                   step="0.01"
+                   min="0"
+                   name="minPrice"
+                   value="@ViewBag.MinPrice"
+                   class="form-control"
+                   placeholder="Cena od" />
+        </div>
+
+        <div class="col-md-2">
+            <input type="number"
+                   step="0.01"
+                   min="0"
+                   name="maxPrice"
+                   value="@ViewBag.MaxPrice"
+                   class="form-control"
+                   placeholder="Cena do" />
+        </div>
+
+        <div class="col-md-2">
+            <select name="sort" class="form-select">
+
+                <option value="">
+                    Najnowsze
+                </option>
+
+                <option value="date_asc"
+                        selected="@(ViewBag.Sort == "date_asc")">
+                    Najstarsze
+                </option>
+
+                <option value="price_asc"
+                        selected="@(ViewBag.Sort == "price_asc")">
+                    Cena rosnąco
+                </option>
+
+                <option value="price_desc"
+                        selected="@(ViewBag.Sort == "price_desc")">
+                    Cena malejąco
+                </option>
+
+            </select>
+        </div>
+
+    </div>
+
+</form>
+
+<h1>Wyniki wyszukiwania dla "@ViewBag.Query"</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Nie znaleziono ogłoszeń.
+    </div>
+}
+else
+{
+    <div class="listing-grid">
+
+        @foreach (var listing in Model)
+        {
+            <div>
+
+                <a asp-controller="Listing"
+                   asp-action="Details"
+                   asp-route-id="@listing.Id"
+                   class="listing-card">
+
+                    <div class="listing-title">
+                        @listing.Title
+                    </div>
+
+                    <div class="listing-price">
+                        @listing.Price zł
+                    </div>
+
+                    <div class="listing-info">
+                        @listing.Location
+                    </div>
+
+                    <div class="listing-info">
+                        @listing.CategoryName
+                    </div>
+
+                    <div class="listing-info">
+                        Dodano @listing.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy ")
+                    </div>
+
+                </a>
+
+            </div>
+        }
+
+    </div>
+}
