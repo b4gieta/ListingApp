@@ -18,6 +18,11 @@
 
 <p><strong>Data dodania:</strong> @Model.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy")</p>
 
+@foreach (var image in Model.ImagesModels)
+{
+    <img src="~/uploads/@image.FileName" width="250" />
+}
+
 <div class="mt-3">
 
     <a asp-controller="Listing"

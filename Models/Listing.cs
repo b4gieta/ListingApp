@@ -32,5 +32,7 @@ namespace ListingApp.Models
         // User
         public int UserId { get; set; }
         public User User { get; set; } = null!;
+
+        public List<ListingImage> Images { get; set; } = new();
     }
 }
