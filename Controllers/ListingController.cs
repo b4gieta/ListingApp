@@ -3,6 +3,7 @@ using ListingApp.Models;
 using ListingApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace ListingApp.Controllers
@@ -10,10 +11,12 @@ namespace ListingApp.Controllers
     public class ListingController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly IWebHostEnvironment _environment;
 
-        public ListingController(AppDbContext db)
+        public ListingController(AppDbContext db, IWebHostEnvironment environment)
         {
             _db = db;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -40,7 +43,11 @@ namespace ListingApp.Controllers
         public IActionResult Create(ListingViewModel vm)
         {
             var userIdString = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
+            if (string.IsNullOrEmpty(userIdString))
+                return RedirectToAction("Auth", "Account");
+
+            if (vm.Images.Count > 8)
+                ModelState.AddModelError("Images", "Maksymalnie 8 zdjęć.");
 
             if (!ModelState.IsValid)
             {
@@ -53,9 +60,10 @@ namespace ListingApp.Controllers
                     .ToList();
 
                 return View(vm);
-            }            
+            }
 
             int userId = int.Parse(userIdString);
+
             var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null) return RedirectToAction("Auth", "Account");
 
@@ -72,6 +80,31 @@ namespace ListingApp.Controllers
 
             _db.Listings.Add(listing);
             _db.SaveChanges();
+
+            string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            foreach (var image in vm.Images)
+            {
+                if (image.Length <= 0) continue;
+
+                string extension = Path.GetExtension(image.FileName);
+                string fileName = $"{Guid.NewGuid()}{extension}";
+                string path = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create)) image.CopyTo(stream);
+
+                _db.ListingImages.Add(new ListingImage
+                {
+                    FileName = fileName,
+                    ListingId = listing.Id
+                });
+            }
+
+            _db.SaveChanges();
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -168,6 +201,7 @@ namespace ListingApp.Controllers
             var listing = _db.Listings
                 .Include(a => a.Category)
                 .Include(a => a.User)
+                .Include(a => a.Images)
                 .FirstOrDefault(a => a.Id == id);
 
             if (listing == null) return RedirectToAction("Index", "Home");
@@ -183,7 +217,8 @@ namespace ListingApp.Controllers
                 CategoryName = listing.Category.Name,
                 UserId = listing.UserId,
                 Username = listing.User.Login,
-                CreatedAt = listing.CreatedAt
+                CreatedAt = listing.CreatedAt,
+                ImagesModels = listing.Images
             };
 
             return View(vm);

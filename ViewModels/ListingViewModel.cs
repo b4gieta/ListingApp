@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ListingApp.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace ListingApp.ViewModels
@@ -34,5 +35,8 @@ namespace ListingApp.ViewModels
         public List<SelectListItem> Categories { get; set; } = new();
 
         public DateTime CreatedAt { get; set; }
+
+        public List<IFormFile> Images { get; set; } = new();
+        public List<ListingImage> ImagesModels { get; set; } = new(); //zrobić viewmodel
     }
 }
