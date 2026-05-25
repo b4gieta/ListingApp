@@ -1,4 +1,4 @@
-﻿@model ListingApp.ViewModels.ListingViewModel
+﻿@model ListingApp.ViewModels.ListingDetailsViewModel
 
 @{
     ViewData["Title"] = Model.Title;
@@ -18,9 +18,9 @@
 
 <p><strong>Data dodania:</strong> @Model.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy")</p>
 
-@foreach (var image in Model.ImagesModels)
+@if (!string.IsNullOrEmpty(Model.ImageFileName))
 {
-    <img src="~/uploads/@image.FileName" width="250" />
+    <img src="~/uploads/@Model.ImageFileName" width="300" />
 }
 
 <div class="mt-3">

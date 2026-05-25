@@ -1,4 +1,4 @@
-﻿@model ListingApp.ViewModels.ListingViewModel
+﻿@model ListingApp.ViewModels.ListingFormViewModel
 
 @{
     ViewData["Title"] = "Edytuj " + Model.Title;
@@ -6,7 +6,7 @@
 
 <h1>Edytuj ogłoszenie</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
         <label asp-for="Title">Nazwa</label>
@@ -43,6 +43,29 @@
         <span asp-validation-for="CategoryId"></span>
     </div>
 
+    <div class="mb-3">
+
+        <label asp-for="Image" class="form-label">
+            Zdjęcie
+        </label>
+
+        <input asp-for="Image"
+               type="file"
+               accept="image/*"
+               class="form-control"
+               id="imageInput" />
+
+    </div>
+
+    <div class="mb-3">
+
+        <img id="imagePreview"
+             src="@(Model.ExistingImage != null ? Url.Content("~/uploads/" + Model.ExistingImage) : "")"
+             width="200"
+             style="@(Model.ExistingImage != null ? "" : "display:none;")" />
+
+    </div>
+
     <button type="submit" class="btn btn-primary">
         Edytuj
     </button>
@@ -51,4 +74,30 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const imageInput = document.getElementById("imageInput");
+        const imagePreview = document.getElementById("imagePreview");
+
+        imageInput.addEventListener("change", function ()
+        {
+            const file = this.files[0];
+
+            if (!file)
+            {
+                imagePreview.style.display = "none";
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e)
+            {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
 }

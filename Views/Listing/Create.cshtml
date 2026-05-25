@@ -1,4 +1,4 @@
-﻿@model ListingApp.ViewModels.ListingViewModel
+﻿@model ListingApp.ViewModels.ListingFormViewModel
 
 @{
     ViewData["Title"] = "Dodaj ogłoszenie";
@@ -45,20 +45,26 @@
 
     <div class="mb-3">
 
-        <label>Zdjęcia</label>
+        <label asp-for="Image" class="form-label">
+            Zdjęcie
+        </label>
 
-        <input id="imageInput"
-               asp-for="Images"
+        <input asp-for="Image"
                type="file"
-               multiple
                accept="image/*"
-               class="form-control" />
-
-        <span asp-validation-for="Images"></span>
+               class="form-control"
+               id="imageInput" />
 
     </div>
 
-    <div id="imagePreviewContainer"></div>
+    <div class="mb-3">
+
+        <img id="imagePreview"
+             src="@(Model.ExistingImage != null ? Url.Content("~/uploads/" + Model.ExistingImage) : "")"
+             width="200"
+             style="@(Model.ExistingImage != null ? "" : "display:none;")" />
+
+    </div>
 
     <button type="submit" class="btn btn-primary">
         Dodaj
@@ -71,77 +77,27 @@
 
     <script>
         const imageInput = document.getElementById("imageInput");
-        const previewContainer = document.getElementById("imagePreviewContainer");
+        const imagePreview = document.getElementById("imagePreview");
 
-        let selectedFiles = [];
-
-        imageInput.addEventListener("change", function (e)
+        imageInput.addEventListener("change", function ()
         {
-            const files = Array.from(e.target.files);
+            const file = this.files[0];
 
-            for (const file of files)
+            if (!file)
             {
-                if (selectedFiles.length >= 8)
-                {
-                    alert("Maksymalnie 8 zdjęć.");
-                    break;
-                }
-
-                selectedFiles.push(file);
-                addImagePreview(file); // dodajemy od razu tylko nowe
+                imagePreview.style.display = "none";
+                return;
             }
 
-            syncInputFiles();
-        });
-
-        function addImagePreview(file)
-        {
             const reader = new FileReader();
 
             reader.onload = function (e)
             {
-                const wrapper = document.createElement("div");
-                wrapper.style.marginBottom = "10px";
-
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.width = 200;
-
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.textContent = "Usuń";
-
-                btn.addEventListener("click", function ()
-                {
-                    // usuń z tablicy
-                    selectedFiles = selectedFiles.filter(f => f !== file);
-
-                    // usuń tylko ten element z DOM (bez refreshPreview)
-                    wrapper.remove();
-
-                    syncInputFiles();
-                });
-
-                wrapper.appendChild(img);
-                wrapper.appendChild(document.createElement("br"));
-                wrapper.appendChild(btn);
-
-                previewContainer.appendChild(wrapper);
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
             };
 
             reader.readAsDataURL(file);
-        }
-
-        function syncInputFiles()
-        {
-            const dataTransfer = new DataTransfer();
-
-            selectedFiles.forEach(file =>
-            {
-                dataTransfer.items.add(file);
-            });
-
-            imageInput.files = dataTransfer.files;
-        }
+        });
     </script>
 }

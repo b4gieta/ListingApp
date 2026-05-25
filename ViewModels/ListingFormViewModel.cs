@@ -1,10 +1,9 @@
-﻿using ListingApp.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace ListingApp.ViewModels
 {
-    public class ListingViewModel
+    public class ListingFormViewModel
     {
         public int Id { get; set; }
 
@@ -26,17 +25,8 @@ namespace ListingApp.ViewModels
         [Required(ErrorMessage = "Kategoria jest wymagana")]
         public int CategoryId { get; set; }
 
-        public string CategoryName { get; set; } = string.Empty;
-
-        public int UserId { get; set; }
-
-        public string Username { get; set; } = string.Empty;
-
         public List<SelectListItem> Categories { get; set; } = new();
-
-        public DateTime CreatedAt { get; set; }
-
-        public List<IFormFile> Images { get; set; } = new();
-        public List<ListingImage> ImagesModels { get; set; } = new(); //zrobić viewmodel
+        public IFormFile? Image { get; set; }
+        public string? ExistingImage { get; set; }
     }
 }

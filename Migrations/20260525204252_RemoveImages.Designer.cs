@@ -3,6 +3,7 @@ using System;
 using ListingApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ListingApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525204252_RemoveImages")]
+    partial class RemoveImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
@@ -52,9 +55,6 @@ namespace ListingApp.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ImageFileName")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime?>("LastEditedAt")
                         .HasColumnType("TEXT");
 
@@ -79,6 +79,26 @@ namespace ListingApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Listings");
+                });
+
+            modelBuilder.Entity("ListingApp.Models.ListingImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ListingId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId");
+
+                    b.ToTable("ListingImage");
                 });
 
             modelBuilder.Entity("ListingApp.Models.User", b =>
@@ -129,9 +149,25 @@ namespace ListingApp.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ListingApp.Models.ListingImage", b =>
+                {
+                    b.HasOne("ListingApp.Models.Listing", "Listing")
+                        .WithMany("Images")
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Listing");
+                });
+
             modelBuilder.Entity("ListingApp.Models.Category", b =>
                 {
                     b.Navigation("Listings");
+                });
+
+            modelBuilder.Entity("ListingApp.Models.Listing", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("ListingApp.Models.User", b =>

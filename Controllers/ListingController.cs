@@ -19,46 +19,40 @@ namespace ListingApp.Controllers
             _environment = environment;
         }
 
+        private List<SelectListItem> GetCategories()
+        {
+            return _db.Categories
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToList();
+        }
+
         [HttpGet]
         public IActionResult Create()
         {
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
-            var vm = new ListingViewModel
+            var vm = new ListingFormViewModel
             {
-                Categories = _db.Categories
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.Id.ToString(),
-                        Text = c.Name
-                    })
-                    .ToList()
+                Categories = GetCategories()
             };
 
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult Create(ListingViewModel vm)
+        public IActionResult Create(ListingFormViewModel vm)
         {
             var userIdString = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userIdString))
-                return RedirectToAction("Auth", "Account");
-
-            if (vm.Images.Count > 8)
-                ModelState.AddModelError("Images", "Maksymalnie 8 zdjęć.");
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
             if (!ModelState.IsValid)
             {
-                vm.Categories = _db.Categories
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.Id.ToString(),
-                        Text = c.Name
-                    })
-                    .ToList();
-
+                vm.Categories = GetCategories();
                 return View(vm);
             }
 
@@ -66,6 +60,18 @@ namespace ListingApp.Controllers
 
             var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null) return RedirectToAction("Auth", "Account");
+
+            string? fileName = null;
+
+            if (vm.Image != null)
+            {
+                string ext = Path.GetExtension(vm.Image.FileName);
+                fileName = $"{Guid.NewGuid()}{ext}";
+                string path = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+
+                using var stream = new FileStream(path, FileMode.Create);
+                vm.Image.CopyTo(stream);
+            }
 
             var listing = new Listing
             {
@@ -75,34 +81,10 @@ namespace ListingApp.Controllers
                 Location = vm.Location,
                 CategoryId = vm.CategoryId,
                 UserId = user.UserId,
-                CreatedAt = DateTime.UtcNow
+                ImageFileName = fileName
             };
 
             _db.Listings.Add(listing);
-            _db.SaveChanges();
-
-            string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            foreach (var image in vm.Images)
-            {
-                if (image.Length <= 0) continue;
-
-                string extension = Path.GetExtension(image.FileName);
-                string fileName = $"{Guid.NewGuid()}{extension}";
-                string path = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(path, FileMode.Create)) image.CopyTo(stream);
-
-                _db.ListingImages.Add(new ListingImage
-                {
-                    FileName = fileName,
-                    ListingId = listing.Id
-                });
-            }
-
             _db.SaveChanges();
 
             return RedirectToAction("Index", "Home");
@@ -122,11 +104,8 @@ namespace ListingApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (listing != null)
-            {
-                _db.Listings.Remove(listing);
-                _db.SaveChanges();
-            }           
+            _db.Listings.Remove(listing);
+            _db.SaveChanges();
 
             return RedirectToAction("Index", "Home");
         }
@@ -138,61 +117,69 @@ namespace ListingApp.Controllers
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
             var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
+            if (listing == null) return RedirectToAction("Index", "Home");
 
-            if (listing == null) return NotFound();
+            if (listing.UserId.ToString() != userIdString) return RedirectToAction("Index", "Home");
 
-            var vm = new ListingViewModel
+            var vm = new ListingFormViewModel
             {
+                Id = listing.Id,
                 Title = listing.Title,
                 Description = listing.Description,
                 Price = listing.Price,
                 Location = listing.Location,
                 CategoryId = listing.CategoryId,
-
-                Categories = _db.Categories
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.Id.ToString(),
-                        Text = c.Name
-                    })
-                    .ToList()
+                Categories = GetCategories(),
+                ExistingImage = listing.ImageFileName
             };
 
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, ListingViewModel vm)
+        public IActionResult Edit(int id, ListingFormViewModel vm)
         {
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
-            if (!ModelState.IsValid)
-            {
-                vm.Categories = _db.Categories
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.Id.ToString(),
-                        Text = c.Name
-                    })
-                    .ToList();
-
-                return View(vm);
-            }
-
             var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
 
             if (listing == null) return RedirectToAction("Index", "Home");
+
+            if (listing.UserId.ToString() != userIdString) return RedirectToAction("Index", "Home");
+
+            if (!ModelState.IsValid)
+            {
+                vm.Categories = GetCategories();
+                return View(vm);
+            }
 
             listing.Title = vm.Title;
             listing.Description = vm.Description;
             listing.Price = vm.Price;
             listing.Location = vm.Location;
             listing.CategoryId = vm.CategoryId;
+            listing.LastEditedAt = DateTime.UtcNow;
+
+            if (vm.Image != null)
+            {
+                string ext = Path.GetExtension(vm.Image.FileName);
+                string fileName = $"{Guid.NewGuid()}{ext}";
+                string path = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+
+                using var stream = new FileStream(path, FileMode.Create);
+                vm.Image.CopyTo(stream);
+
+                listing.ImageFileName = fileName;
+            }
+            else if (vm.ExistingImage == null)
+            {
+                listing.ImageFileName = null;
+            }
 
             _db.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Details", new { id = listing.Id });
         }
 
         [HttpGet]
@@ -201,24 +188,22 @@ namespace ListingApp.Controllers
             var listing = _db.Listings
                 .Include(a => a.Category)
                 .Include(a => a.User)
-                .Include(a => a.Images)
                 .FirstOrDefault(a => a.Id == id);
 
             if (listing == null) return RedirectToAction("Index", "Home");
 
-            var vm = new ListingViewModel
+            var vm = new ListingDetailsViewModel
             {
                 Id = listing.Id,
                 Title = listing.Title,
                 Description = listing.Description,
                 Price = listing.Price,
                 Location = listing.Location,
-                CategoryId = listing.CategoryId,
-                CategoryName = listing.Category.Name,
-                UserId = listing.UserId,
-                Username = listing.User.Login,
                 CreatedAt = listing.CreatedAt,
-                ImagesModels = listing.Images
+                LastEditedAt = listing.LastEditedAt,
+                CategoryName = listing.Category.Name,
+                Username = listing.User.Login,
+                ImageFileName = listing.ImageFileName
             };
 
             return View(vm);
