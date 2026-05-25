@@ -3,7 +3,6 @@ using ListingApp.Models;
 using ListingApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace ListingApp.Controllers
@@ -65,6 +64,9 @@ namespace ListingApp.Controllers
 
             if (vm.Image != null)
             {
+                string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
                 string ext = Path.GetExtension(vm.Image.FileName);
                 fileName = $"{Guid.NewGuid()}{ext}";
                 string path = Path.Combine(_environment.WebRootPath, "uploads", fileName);
@@ -163,18 +165,23 @@ namespace ListingApp.Controllers
 
             if (vm.Image != null)
             {
-                string ext = Path.GetExtension(vm.Image.FileName);
-                string fileName = $"{Guid.NewGuid()}{ext}";
-                string path = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+                string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                if (!string.IsNullOrEmpty(listing.ImageFileName))
+                {
+                    string oldPath = Path.Combine(uploadsFolder, listing.ImageFileName);
+                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                }
+
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(vm.Image.FileName)}";
+                string path = Path.Combine(uploadsFolder, fileName);
 
                 using var stream = new FileStream(path, FileMode.Create);
                 vm.Image.CopyTo(stream);
 
                 listing.ImageFileName = fileName;
-            }
-            else if (vm.ExistingImage == null)
-            {
-                listing.ImageFileName = null;
             }
 
             _db.SaveChanges();

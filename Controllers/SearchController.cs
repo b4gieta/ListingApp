@@ -47,7 +47,8 @@ namespace ListingApp.Controllers
                     Location = x.Location,
                     CategoryName = x.Category.Name,
                     Username = x.User.Login,
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    ImageFileName = x.ImageFileName
                 })
                 .ToListAsync();
 
