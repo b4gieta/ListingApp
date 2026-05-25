@@ -4,60 +4,86 @@
     ViewData["Title"] = "Strona główna";
 }
 
-<form method="get" asp-controller="Search" asp-action="Index" class="mb-4">
+<div class="container mt-4">
 
-    <div class="input-group">
+    <h1 class="mb-4">Najnowsze ogłoszenia</h1>
 
-        <input type="text"
-               name="query"
-               value="@ViewBag.Query"
-               class="form-control"
-               placeholder="Wpisz tytuł ogłoszenia..." />
+    <form method="get" asp-controller="Search" asp-action="Index" class="mb-4">
 
-        <button type="submit" class="btn btn-primary">
-            Szukaj
-        </button>
+        <div class="input-group">
 
-    </div>
+            <input type="text"
+                   name="query"
+                   value="@ViewBag.Query"
+                   class="form-control"
+                   placeholder="Wpisz tytuł ogłoszenia..." />
 
-</form>
-
-<h1>Najnowsze ogłoszenia</h1>
-
-<div class="listing-grid">
-
-    @foreach (var listing in Model)
-    {
-        <div>
-
-            <a asp-controller="Listing"
-               asp-action="Details"
-               asp-route-id="@listing.Id"
-               class="listing-card">
-
-                <div class="listing-title">
-                    @listing.Title
-                </div>
-
-                <div class="listing-price">
-                    @listing.Price zł
-                </div>
-
-                <div class="listing-info">
-                    @listing.Location
-                </div>
-
-                <div class="listing-info">
-                    @listing.CategoryName
-                </div>
-
-                <div class="listing-info">
-                    Dodano @listing.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy ")
-                </div>
-
-            </a>
+            <button type="submit" class="btn btn-primary">
+                Szukaj
+            </button>
 
         </div>
-    }
+
+    </form>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        @foreach (var listing in Model)
+        {
+            <div class="col">
+
+                <a asp-controller="Listing"
+                   asp-action="Details"
+                   asp-route-id="@listing.Id"
+                   class="text-decoration-none text-dark">
+
+                    <div class="card h-100 shadow-sm border-0">
+
+                        @if (!string.IsNullOrEmpty(listing.ImageFileName))
+                        {
+                            <img src="~/uploads/@listing.ImageFileName"
+                                 class="card-img-top"
+                                 style="height:200px; object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="height:200px;">
+                                <span class="text-muted">Brak zdjęcia</span>
+                            </div>
+                        }
+
+                        <div class="card-body">
+
+                            <h5 class="card-title mb-2">
+                                @listing.Title
+                            </h5>
+
+                            <div class="fw-bold text-primary mb-2">
+                                @listing.Price zł
+                            </div>
+
+                            <div class="text-muted small">
+                                @listing.Location
+                            </div>
+
+                            <div class="text-muted small">
+                                @listing.CategoryName
+                            </div>
+
+                            <div class="text-muted small mt-2">
+                                @listing.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+        }
+
+    </div>
 
 </div>

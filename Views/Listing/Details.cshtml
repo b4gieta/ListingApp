@@ -1,47 +1,139 @@
-﻿@model ListingApp.ViewModels.ListingViewModel
+﻿@model ListingApp.ViewModels.ListingDetailsViewModel
 
 @{
     ViewData["Title"] = Model.Title;
 }
 
-<h1>@Model.Title</h1>
+<div class="container mt-4">
 
-<p>@Model.Description</p>
+    <div class="row g-4">
 
-<p><strong>Cena:</strong> @Model.Price zł</p>
+        <div class="col-lg-8">
 
-<p><strong>Lokalizacja:</strong> @Model.Location</p>
+            <div class="card border-0 shadow-sm">
 
-<p><strong>Kategoria:</strong> @Model.CategoryName</p>
+                @if (!string.IsNullOrEmpty(Model.ImageFileName))
+                {
+                    <img src="~/uploads/@Model.ImageFileName"
+                         class="card-img-top"
+                         style="max-height:500px; object-fit:cover;" />
+                }
 
-<p><strong>Autor ogłoszenia:</strong> @Model.Username</p>
+                <div class="card-body">
 
-<p><strong>Data dodania:</strong> @Model.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy")</p>
+                    <h1 class="h3 mb-3">
+                        @Model.Title
+                    </h1>
 
-@foreach (var image in Model.ImagesModels)
-{
-    <img src="~/uploads/@image.FileName" width="250" />
-}
+                    <h2 class="h4 fw-bold mb-4">
+                        @Model.Price zł
+                    </h2>
 
-<div class="mt-3">
+                    <div class="border-top pt-4">
 
-    <a asp-controller="Listing"
-       asp-action="Edit"
-       asp-route-id="@Model.Id"
-       class="btn btn-warning">
-        Edytuj
-    </a>
+                        <h3 class="h5 mb-3">
+                            Opis
+                        </h3>
 
-    <form asp-controller="Listing"
-          asp-action="Delete"
-          asp-route-id="@Model.Id"
-          method="post"
-          style="display:inline;">
+                        <p class="mb-0" style="white-space:pre-line;">
+                            @Model.Description
+                        </p>
 
-        <button type="submit" class="btn btn-danger">
-            Usuń
-        </button>
+                    </div>
 
-    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm mb-3">
+
+                <div class="card-body">
+
+                    <h3 class="h5 mb-4">
+                        Szczegóły
+                    </h3>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Lokalizacja
+                        </div>
+
+                        <div>
+                            @Model.Location
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Kategoria
+                        </div>
+
+                        <div>
+                            @Model.CategoryName
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Autor ogłoszenia
+                        </div>
+
+                        <div>
+                            @Model.Username
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Data dodania
+                        </div>
+
+                        <div>
+                            @Model.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy")
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-grid gap-2">
+
+                        <a asp-controller="Listing"
+                           asp-action="Edit"
+                           asp-route-id="@Model.Id"
+                           class="btn btn-warning">
+                            Edytuj
+                        </a>
+
+                        <form asp-controller="Listing"
+                              asp-action="Delete"
+                              asp-route-id="@Model.Id"
+                              method="post">
+
+                            <button type="submit"
+                                    class="btn btn-danger w-100">
+                                Usuń
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>

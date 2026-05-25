@@ -5,142 +5,205 @@
     {
         ViewData["Title"] = $"Wyniki wyszukiwania dla \"{ViewBag.Query}\"";
     }
-	else
+    else
     {
         ViewData["Title"] = "Wyszukiwanie ogłoszeń";
     }
 }
 
-<form method="get" asp-controller="Search" asp-action="Index" class="mb-4">
+<div class="container mt-4">
 
-    <div class="row g-3">
+    <div class="card border-0 shadow-sm mb-4">
 
-        <div class="input-group">
+        <div class="card-body p-4">
 
-            <input type="text"
-                   name="query"
-                   value="@ViewBag.Query"
-                   class="form-control"
-                   placeholder="Wpisz tytuł ogłoszenia..." />
+            <form method="get"
+                  asp-controller="Search"
+                  asp-action="Index">
 
-            <button type="submit" class="btn btn-primary">
-                Szukaj
-            </button>
+                <div class="row g-3">
 
-        </div>
+                    <div class="col-12">
 
-        <div class="col-md-2">
-            <select name="categoryId" class="form-select">
+                        <div class="input-group">
 
-                <option value="">
-                    Wszystkie kategorie
-                </option>
+                            <input type="text"
+                                   name="query"
+                                   value="@ViewBag.Query"
+                                   class="form-control"
+                                   placeholder="Wpisz tytuł ogłoszenia..." />
 
-                @foreach (var category in ViewBag.Categories)
-                {
-                    <option value="@category.Value"
-                            selected="@(ViewBag.CategoryId?.ToString() == category.Value)">
-                        @category.Text
-                    </option>
-                }
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Szukaj
+                            </button>
 
-            </select>
-        </div>
+                        </div>
 
-        <div class="col-md-2">
-            <input type="number"
-                   step="0.01"
-                   min="0"
-                   name="minPrice"
-                   value="@ViewBag.MinPrice"
-                   class="form-control"
-                   placeholder="Cena od" />
-        </div>
+                    </div>
 
-        <div class="col-md-2">
-            <input type="number"
-                   step="0.01"
-                   min="0"
-                   name="maxPrice"
-                   value="@ViewBag.MaxPrice"
-                   class="form-control"
-                   placeholder="Cena do" />
-        </div>
+                    <div class="col-md-3">
 
-        <div class="col-md-2">
-            <select name="sort" class="form-select">
+                        <select name="categoryId"
+                                class="form-select">
 
-                <option value="">
-                    Najnowsze
-                </option>
+                            <option value="">
+                                Wszystkie kategorie
+                            </option>
 
-                <option value="date_asc"
-                        selected="@(ViewBag.Sort == "date_asc")">
-                    Najstarsze
-                </option>
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.Value"
+                                        selected="@(ViewBag.CategoryId?.ToString() == category.Value)">
+                                    @category.Text
+                                </option>
+                            }
 
-                <option value="price_asc"
-                        selected="@(ViewBag.Sort == "price_asc")">
-                    Cena rosnąco
-                </option>
+                        </select>
 
-                <option value="price_desc"
-                        selected="@(ViewBag.Sort == "price_desc")">
-                    Cena malejąco
-                </option>
+                    </div>
 
-            </select>
+                    <div class="col-md-3">
+
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               name="minPrice"
+                               value="@ViewBag.MinPrice"
+                               class="form-control"
+                               placeholder="Cena od" />
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               name="maxPrice"
+                               value="@ViewBag.MaxPrice"
+                               class="form-control"
+                               placeholder="Cena do" />
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <select name="sort"
+                                class="form-select">
+
+                            <option value=""
+                                    selected="@(string.IsNullOrEmpty(ViewBag.Sort as string))">
+                                Najnowsze
+                            </option>
+
+                            <option value="date_asc"
+                                    selected="@(ViewBag.Sort == "date_asc")">
+                                Najstarsze
+                            </option>
+
+                            <option value="price_asc"
+                                    selected="@(ViewBag.Sort == "price_asc")">
+                                Cena rosnąco
+                            </option>
+
+                            <option value="price_desc"
+                                    selected="@(ViewBag.Sort == "price_desc")">
+                                Cena malejąco
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </form>
+
         </div>
 
     </div>
 
-</form>
+    @if (ViewBag.Query != null)
+    {
+        <h1 class="h4 mb-3">
+            Wyniki dla "@ViewBag.Query"
+        </h1>
+    }
+    else
+    {
+        <h1 class="h4 mb-3">
+            Wyniki wyszukiwania
+        </h1>
+    }
 
-<h1>Wyniki wyszukiwania dla "@ViewBag.Query"</h1>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info border-0 shadow-sm">
+            Nie znaleziono ogłoszeń.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        Nie znaleziono ogłoszeń.
-    </div>
-}
-else
-{
-    <div class="listing-grid">
+            @foreach (var listing in Model)
+            {
+                <div class="col">
 
-        @foreach (var listing in Model)
-        {
-            <div>
+                    <a asp-controller="Listing"
+                       asp-action="Details"
+                       asp-route-id="@listing.Id"
+                       class="text-decoration-none text-dark">
 
-                <a asp-controller="Listing"
-                   asp-action="Details"
-                   asp-route-id="@listing.Id"
-                   class="listing-card">
+                        <div class="card h-100 border-0 shadow-sm">
 
-                    <div class="listing-title">
-                        @listing.Title
-                    </div>
+                            @if (!string.IsNullOrEmpty(listing.ImageFileName))
+                            {
+                                <img src="~/uploads/@listing.ImageFileName"
+                                     class="card-img-top"
+                                     style="height:200px; object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center"
+                                     style="height:200px;">
+                                    <span class="text-muted">Brak zdjęcia</span>
+                                </div>
+                            }
 
-                    <div class="listing-price">
-                        @listing.Price zł
-                    </div>
+                            <div class="card-body">
 
-                    <div class="listing-info">
-                        @listing.Location
-                    </div>
+                                <h5 class="card-title">
+                                    @listing.Title
+                                </h5>
 
-                    <div class="listing-info">
-                        @listing.CategoryName
-                    </div>
+                                <div class="fw-bold text-primary mb-2">
+                                    @listing.Price zł
+                                </div>
 
-                    <div class="listing-info">
-                        Dodano @listing.CreatedAt.ToLocalTime().ToString("HH:mm dd.MM.yyyy ")
-                    </div>
+                                <div class="text-muted small">
+                                    @listing.Location
+                                </div>
 
-                </a>
+                                <div class="text-muted small">
+                                    @listing.CategoryName
+                                </div>
 
-            </div>
-        }
+                                <div class="text-muted small mt-2">
+                                    @listing.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                </div>
 
-    </div>
-}
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
