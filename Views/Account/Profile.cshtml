@@ -1,0 +1,68 @@
+﻿@model ListingApp.ViewModels.UserProfileViewModel
+
+<h2>Twój profil</h2>
+
+<button type="button" onclick="toggleEdit()">Edytuj profil</button>
+
+<form asp-action="Profile" method="post">
+
+    <input type="hidden" asp-for="UserId" />
+
+    <div>
+        <label>Login</label>
+        <input asp-for="Login" disabled />
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" id="Email" disabled />
+    </div>
+
+    <div>
+        <label>Imię</label>
+        <input asp-for="FirstName" id="FirstName" disabled />
+    </div>
+
+    <div>
+        <label>Nazwisko</label>
+        <input asp-for="LastName" id="LastName" disabled />
+    </div>
+
+    <div>
+        <label>Telefon</label>
+        <input asp-for="TelephoneNumber" id="TelephoneNumber" disabled />
+    </div>
+
+    <div>
+        <label>Lokalizacja</label>
+        <input asp-for="Location" id="Location" disabled />
+    </div>
+
+    <button type="submit" id="saveBtn" style="display:none;">
+        Zapisz zmiany
+    </button>
+
+</form>
+
+<script>
+    let editMode = false;
+
+    function toggleEdit() {
+        editMode = !editMode;
+
+        const fields = [
+            "Email",
+            "FirstName",
+            "LastName",
+            "TelephoneNumber",
+            "Location"
+        ];
+
+        fields.forEach(id => {
+            document.getElementById(id).disabled = !editMode;
+        });
+
+        document.getElementById("saveBtn").style.display =
+            editMode ? "block" : "none";
+    }
+</script>

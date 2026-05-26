@@ -1,7 +1,6 @@
 ﻿@model ListingApp.ViewModels.LoginViewModel
 
 @{
-    var registerModel = new ListingApp.ViewModels.RegisterViewModel();
     ViewData["Title"] = "Logowanie";
 }
 
@@ -24,16 +23,21 @@
 
 <!-- LOGIN -->
 <div id="loginBox">
+
     <form asp-action="Login" method="post">
 
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <input asp-for="Login" placeholder="Login" />
-        <span asp-validation-for="Login"></span>
+        <span asp-validation-for="Login" class="text-danger"></span>
 
         <input asp-for="Password" type="password" placeholder="Hasło" />
-        <span asp-validation-for="Password"></span>
+        <span asp-validation-for="Password" class="text-danger"></span>
 
         <button type="submit">Zaloguj</button>
+
     </form>
+
 </div>
 
 <!-- REGISTER -->
@@ -41,14 +45,36 @@
 
     <form asp-action="Register" method="post">
 
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <input name="Login" placeholder="Login" />
+        <span class="text-danger" data-valmsg-for="Login"></span>
+
         <input name="Email" placeholder="Email" />
+        <span class="text-danger" data-valmsg-for="Email"></span>
+
+        <input name="FirstName" placeholder="Imię" />
+        <span class="text-danger" data-valmsg-for="FirstName"></span>
+
+        <input name="LastName" placeholder="Nazwisko" />
+        <span class="text-danger" data-valmsg-for="LastName"></span>
+
+        <input name="TelephoneNumber" placeholder="Numer telefonu" />
+        <span class="text-danger" data-valmsg-for="TelephoneNumber"></span>
+
+        <input name="Location" placeholder="Lokalizacja" />
+        <span class="text-danger" data-valmsg-for="Location"></span>
+
         <input name="Password" type="password" placeholder="Hasło" />
+        <span class="text-danger" data-valmsg-for="Password"></span>
+
         <input name="ConfirmPassword" type="password" placeholder="Powtórz hasło" />
+        <span class="text-danger" data-valmsg-for="ConfirmPassword"></span>
 
         <button type="submit">Zarejestruj</button>
 
     </form>
+
 </div>
 
 <script>
@@ -62,3 +88,7 @@
         document.getElementById("registerBox").style.display = "block";
     }
 </script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

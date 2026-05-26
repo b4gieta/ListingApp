@@ -39,6 +39,12 @@ namespace ListingApp.Controllers
                 return View("Auth");
             }
 
+            if (!user.IsActive)
+            {
+                ModelState.AddModelError("", "Konto zostało zablokowane");
+                return View("Auth");
+            }
+
             var result = _passwordHasher.VerifyHashedPassword(
                 user,
                 user.Password,
@@ -85,16 +91,18 @@ namespace ListingApp.Controllers
                 Login = model.Login,
                 Email = model.Email,
 
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                TelephoneNumber = model.TelephoneNumber,
+                Location = model.Location,
+
+                IsActive = true,
                 UserRole = Role.User
             };
 
-            user.Password = _passwordHasher.HashPassword(
-                user,
-                model.Password
-            );
+            user.Password = _passwordHasher.HashPassword(user, model.Password);
 
             _context.Users.Add(user);
-
             await _context.SaveChangesAsync();
 
             HttpContext.Session.SetString("UserId", user.UserId.ToString());
@@ -109,6 +117,53 @@ namespace ListingApp.Controllers
             HttpContext.Session.Clear();
 
             return RedirectToAction("Index", "Home");
+        }
+
+
+        // User Profile
+        [HttpGet] // Wyświetlanie
+        public async Task<IActionResult> Profile()
+        {
+            var userId = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+                return NotFound();
+
+            var model = new UserProfileViewModel
+            {
+                UserId = user.UserId,
+                Login = user.Login,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                TelephoneNumber = user.TelephoneNumber,
+                Location = user.Location
+            };
+
+            return View(model);
+        }
+
+        [HttpPost] // Edytowanie
+        public async Task<IActionResult> Profile(UserProfileViewModel model)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == model.UserId);
+
+            if (user == null)
+                return NotFound();
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.TelephoneNumber = model.TelephoneNumber;
+            user.Location = model.Location;
+            user.Email = model.Email;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Profile");
         }
     }
 }

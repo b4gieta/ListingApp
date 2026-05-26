@@ -22,7 +22,26 @@ namespace ListingApp.Models
         [Required]
         [MaxLength(100)]
         public string Password { get;set; } = string.Empty;
-        
+        [Required]
+        public bool IsActive { get; set; } = true;
+
+        [Required]
+        [MaxLength(100)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(9)]
+        public string TelephoneNumber { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string Location { get; set; } = string.Empty;
+
+
         public Role UserRole { get; set; } = Role.User;
 
         public ICollection<Listing> Listings { get; set; } = new List<Listing>();

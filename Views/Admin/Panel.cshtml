@@ -1,11 +1,31 @@
-﻿@model List<ListingApp.Models.User>
+﻿@model ListingApp.ViewModels.AdminDashboardViewModel
 
 @{
     ViewData["Title"] = "Panel Admina";
 }
 
-<h2>Panel Admina - Użytkownicy</h2>
+<h2>Panel Admina</h2>
+<hr />
+<h3>Statystyki</h3>
+<div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:30px;">
 
+    <div style="border:1px solid black; padding:15px; min-width:200px;">
+        <h4>Użytkownicy</h4>
+        <p>Wszyscy: @Model.UsersCount</p>
+        <p>Aktywni: @Model.ActiveUsersCount</p>
+        <p>Zablokowani: @Model.BlockedUsersCount</p>
+    </div>
+
+    <div style="border:1px solid black; padding:15px; min-width:200px;">
+        <h4>Ogłoszenia</h4>
+        <p>Wszystkie: @Model.ListingsCount</p>
+        <p>Ostatnie 7 dni: @Model.ListingsLast7Days</p>
+        <p>Ostatnie 30 dni: @Model.ListingsLast30Days</p>
+    </div>
+</div>
+<hr />
+
+<h3>Lista użytkowników</h3>
 <table border="1" cellpadding="8">
     <thead>
         <tr>
@@ -13,17 +33,51 @@
             <th>Login</th>
             <th>Email</th>
             <th>Rola</th>
+            <th>Status</th>
+            <th>Akcja</th>
         </tr>
     </thead>
 
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var user in Model.Users)
         {
             <tr>
                 <td>@user.UserId</td>
                 <td>@user.Login</td>
                 <td>@user.Email</td>
                 <td>@user.UserRole</td>
+                <td>
+                    @(user.IsActive ? "Aktywny" : "Zablokowany")
+                </td>
+                <td>
+                    @if (user.IsActive)
+                    {
+                        <form asp-action="BlockUser" method="post">
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@user.UserId" />
+
+                            <button type="submit">
+                                Zablokuj
+                            </button>
+
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="UnblockUser" method="post">
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@user.UserId" />
+
+                            <button type="submit">
+                                Odblokuj
+                            </button>
+                        </form>
+                    }
+                </td>
             </tr>
         }
     </tbody>

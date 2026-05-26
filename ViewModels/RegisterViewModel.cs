@@ -13,6 +13,23 @@ namespace ListingApp.ViewModels
         [EmailAddress(ErrorMessage = "Niepoprawny email")]
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Imię jest wymagane")]
+        [StringLength(100)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Nazwisko jest wymagane")]
+        [StringLength(100)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Numer telefonu jest wymagany")]
+        [RegularExpression(@"^\d{9}$",
+            ErrorMessage = "Numer telefonu musi zawierać 9 cyfr")]
+        public string TelephoneNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Lokalizacja jest wymagana")]
+        [StringLength(100)]
+        public string Location { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Hasło jest wymagane")]
         [StringLength(100, MinimumLength = 8,
             ErrorMessage = "Hasło musi mieć minimum 8 znaków")]
