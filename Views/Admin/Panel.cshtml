@@ -4,81 +4,234 @@
     ViewData["Title"] = "Panel Admina";
 }
 
-<h2>Panel Admina</h2>
-<hr />
-<h3>Statystyki</h3>
-<div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:30px;">
+<div class="container mt-5">
 
-    <div style="border:1px solid black; padding:15px; min-width:200px;">
-        <h4>Użytkownicy</h4>
-        <p>Wszyscy: @Model.UsersCount</p>
-        <p>Aktywni: @Model.ActiveUsersCount</p>
-        <p>Zablokowani: @Model.BlockedUsersCount</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h1 class="h3 mb-0">
+            Panel Admina
+        </h1>
+
     </div>
 
-    <div style="border:1px solid black; padding:15px; min-width:200px;">
-        <h4>Ogłoszenia</h4>
-        <p>Wszystkie: @Model.ListingsCount</p>
-        <p>Ostatnie 7 dni: @Model.ListingsLast7Days</p>
-        <p>Ostatnie 30 dni: @Model.ListingsLast30Days</p>
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h2 class="h5 mb-4">
+                        Użytkownicy
+                    </h2>
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Wszyscy użytkownicy
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            @Model.UsersCount
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Aktywni
+                        </div>
+
+                        <div class="fs-5">
+                            @Model.ActiveUsersCount
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <div class="text-muted small">
+                            Zablokowani
+                        </div>
+
+                        <div class="fs-5">
+                            @Model.BlockedUsersCount
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h2 class="h5 mb-4">
+                        Ogłoszenia
+                    </h2>
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Wszystkie ogłoszenia
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            @Model.ListingsCount
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Ostatnie 7 dni
+                        </div>
+
+                        <div class="fs-5">
+                            @Model.ListingsLast7Days
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <div class="text-muted small">
+                            Ostatnie 30 dni
+                        </div>
+
+                        <div class="fs-5">
+                            @Model.ListingsLast30Days
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body">
+
+            <h2 class="h5 mb-4">
+                Lista użytkowników
+            </h2>
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Login</th>
+                            <th>Email</th>
+                            <th>Rola</th>
+                            <th>Status</th>
+                            <th class="text-end">Akcja</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+
+                                <td>@user.UserId</td>
+
+                                <td>
+                                    @user.Login
+                                </td>
+
+                                <td>
+                                    @user.Email
+                                </td>
+
+                                <td>
+                                    @user.UserRole
+                                </td>
+
+                                <td>
+
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Aktywny
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Zablokowany
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    @if (user.IsActive)
+                                    {
+                                        <form asp-action="BlockUser"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.UserId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                Zablokuj
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="UnblockUser"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.UserId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-success">
+                                                Odblokuj
+                                            </button>
+
+                                        </form>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-<hr />
-
-<h3>Lista użytkowników</h3>
-<table border="1" cellpadding="8">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Login</th>
-            <th>Email</th>
-            <th>Rola</th>
-            <th>Status</th>
-            <th>Akcja</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var user in Model.Users)
-        {
-            <tr>
-                <td>@user.UserId</td>
-                <td>@user.Login</td>
-                <td>@user.Email</td>
-                <td>@user.UserRole</td>
-                <td>
-                    @(user.IsActive ? "Aktywny" : "Zablokowany")
-                </td>
-                <td>
-                    @if (user.IsActive)
-                    {
-                        <form asp-action="BlockUser" method="post">
-
-                            <input type="hidden"
-                                   name="id"
-                                   value="@user.UserId" />
-
-                            <button type="submit">
-                                Zablokuj
-                            </button>
-
-                        </form>
-                    }
-                    else
-                    {
-                        <form asp-action="UnblockUser" method="post">
-
-                            <input type="hidden"
-                                   name="id"
-                                   value="@user.UserId" />
-
-                            <button type="submit">
-                                Odblokuj
-                            </button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
