@@ -4,89 +4,289 @@
     ViewData["Title"] = "Logowanie";
 }
 
-<h2>Logowanie / Rejestracja</h2>
+<div class="container mt-5">
 
-<button type="button" onclick="showLogin()">Zaloguj</button>
-<button type="button" onclick="showRegister()">Zarejestruj</button>
+    <div class="row justify-content-center">
 
-<hr />
+        <div class="col-lg-6 col-xl-5">
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div style="color:red">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p>@error.ErrorMessage</p>
-        }
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h1 class="h3 mb-4 text-center">
+                        Logowanie / Rejestracja
+                    </h1>
+
+                    <div class="d-flex gap-2 mb-4">
+
+                        <button type="button"
+                                id="loginTabBtn"
+                                class="btn w-50"
+                                onclick="showLogin()">
+                            Zaloguj
+                        </button>
+
+                        <button type="button"
+                                id="registerTabBtn"
+                                class="btn w-50"
+                                onclick="showRegister()">
+                            Zarejestruj
+                        </button>
+
+                    </div>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+
+                        </div>
+                    }
+
+                    <!-- LOGIN -->
+                    <div id="loginBox">
+
+                        <form asp-action="Login" method="post">
+
+                            <div asp-validation-summary="ModelOnly"
+                                 class="text-danger mb-3"></div>
+
+                            <div class="mb-3">
+
+                                <label asp-for="Login" class="form-label">
+                                    Login
+                                </label>
+
+                                <input asp-for="Login"
+                                       class="form-control"
+                                       placeholder="Wprowadź login" />
+
+                                <span asp-validation-for="Login"
+                                      class="text-danger small"></span>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label asp-for="Password" class="form-label">
+                                    Hasło
+                                </label>
+
+                                <input asp-for="Password"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="Wprowadź hasło" />
+
+                                <span asp-validation-for="Password"
+                                      class="text-danger small"></span>
+
+                            </div>
+
+                            <div class="d-grid">
+
+                                <button type="submit"
+                                        class="btn btn-primary">
+                                    Zaloguj
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <!-- REGISTER -->
+                    <div id="registerBox" style="display:none">
+
+                        <form asp-action="Register" method="post">
+
+                            <div asp-validation-summary="ModelOnly"
+                                 class="text-danger mb-3"></div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Login
+                                </label>
+
+                                <input name="Login"
+                                       class="form-control"
+                                       placeholder="Wprowadź login" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="Login"></span>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Email
+                                </label>
+
+                                <input name="Email"
+                                       class="form-control"
+                                       placeholder="Wprowadź email" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="Email"></span>
+
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label class="form-label">
+                                        Imię
+                                    </label>
+
+                                    <input name="FirstName"
+                                           class="form-control"
+                                           placeholder="Imię" />
+
+                                    <span class="text-danger small"
+                                          data-valmsg-for="FirstName"></span>
+
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label class="form-label">
+                                        Nazwisko
+                                    </label>
+
+                                    <input name="LastName"
+                                           class="form-control"
+                                           placeholder="Nazwisko" />
+
+                                    <span class="text-danger small"
+                                          data-valmsg-for="LastName"></span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Numer telefonu
+                                </label>
+
+                                <input name="TelephoneNumber"
+                                       class="form-control"
+                                       placeholder="Numer telefonu" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="TelephoneNumber"></span>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Lokalizacja
+                                </label>
+
+                                <input name="Location"
+                                       class="form-control"
+                                       placeholder="Lokalizacja" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="Location"></span>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Hasło
+                                </label>
+
+                                <input name="Password"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="Wprowadź hasło" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="Password"></span>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label class="form-label">
+                                    Powtórz hasło
+                                </label>
+
+                                <input name="ConfirmPassword"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="Powtórz hasło" />
+
+                                <span class="text-danger small"
+                                      data-valmsg-for="ConfirmPassword"></span>
+
+                            </div>
+
+                            <div class="d-grid">
+
+                                <button type="submit"
+                                        class="btn btn-primary">
+                                    Zarejestruj
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-}
-
-<!-- LOGIN -->
-<div id="loginBox">
-
-    <form asp-action="Login" method="post">
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <input asp-for="Login" placeholder="Login" />
-        <span asp-validation-for="Login" class="text-danger"></span>
-
-        <input asp-for="Password" type="password" placeholder="Hasło" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-
-        <button type="submit">Zaloguj</button>
-
-    </form>
-
-</div>
-
-<!-- REGISTER -->
-<div id="registerBox" style="display:none">
-
-    <form asp-action="Register" method="post">
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <input name="Login" placeholder="Login" />
-        <span class="text-danger" data-valmsg-for="Login"></span>
-
-        <input name="Email" placeholder="Email" />
-        <span class="text-danger" data-valmsg-for="Email"></span>
-
-        <input name="FirstName" placeholder="Imię" />
-        <span class="text-danger" data-valmsg-for="FirstName"></span>
-
-        <input name="LastName" placeholder="Nazwisko" />
-        <span class="text-danger" data-valmsg-for="LastName"></span>
-
-        <input name="TelephoneNumber" placeholder="Numer telefonu" />
-        <span class="text-danger" data-valmsg-for="TelephoneNumber"></span>
-
-        <input name="Location" placeholder="Lokalizacja" />
-        <span class="text-danger" data-valmsg-for="Location"></span>
-
-        <input name="Password" type="password" placeholder="Hasło" />
-        <span class="text-danger" data-valmsg-for="Password"></span>
-
-        <input name="ConfirmPassword" type="password" placeholder="Powtórz hasło" />
-        <span class="text-danger" data-valmsg-for="ConfirmPassword"></span>
-
-        <button type="submit">Zarejestruj</button>
-
-    </form>
 
 </div>
 
 <script>
+    function setTabStyles(isLogin) {
+
+        const loginBtn = document.getElementById("loginTabBtn");
+        const registerBtn = document.getElementById("registerTabBtn");
+
+        if (isLogin) {
+            loginBtn.className = "btn btn-primary w-50";
+            registerBtn.className = "btn btn-outline-primary w-50";
+        } else {
+            loginBtn.className = "btn btn-outline-primary w-50";
+            registerBtn.className = "btn btn-primary w-50";
+        }
+    }
+
     function showLogin() {
         document.getElementById("loginBox").style.display = "block";
         document.getElementById("registerBox").style.display = "none";
+        setTabStyles(true);
     }
 
     function showRegister() {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("registerBox").style.display = "block";
+        setTabStyles(false);
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        showLogin();
+    });
 </script>
 
 @section Scripts {

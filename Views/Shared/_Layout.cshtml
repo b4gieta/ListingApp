@@ -17,75 +17,110 @@
             var role = Context?.Session?.GetString("UserRole");
         }
 
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ListingApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm mb-4">
 
-                    <ul class="navbar-nav">
+            <div class="container">
+
+                <a class="navbar-brand fw-bold"
+                   asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index">
+                    ListingApp
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+                <div class="collapse navbar-collapse"
+                     id="mainNavbar">
+
+                    <ul class="navbar-nav me-auto">
+
                         @if (!string.IsNullOrEmpty(role) && role == Role.Admin.ToString())
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Admin" asp-action="Panel">
-                                    👑 Panel Administracyjny
+
+                                <a class="nav-link"
+                                   asp-controller="Admin"
+                                   asp-action="Panel">
+                                    Panel Administracyjny
                                 </a>
+
                             </li>
                         }
+
                     </ul>
 
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav align-items-lg-center gap-lg-2">
 
                         @if (!string.IsNullOrEmpty(login))
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark">
-                                    Witaj @login
+
+                                <span class="nav-link text-muted">
+                                    Witaj, <span class="fw-semibold text-dark">@login</span>
                                 </span>
+
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark"
+
+                                <a class="nav-link"
                                    asp-controller="Account"
                                    asp-action="Profile">
-                                    👤 Profil
+                                    Profil
                                 </a>
+
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Account"
-                                   asp-action="Logout">
-                                    🚪 Wyloguj
-                                </a>
-                            </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
+                                <a class="nav-link"
                                    asp-controller="Listing"
                                    asp-action="Create">
-                                    ➕ Dodaj ogłoszenie
+                                    Dodaj ogłoszenie
                                 </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="btn btn-outline-danger btn-sm px-3"
+                                   asp-controller="Account"
+                                   asp-action="Logout">
+                                    Wyloguj
+                                </a>
+
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark"
+
+                                <a class="btn btn-primary px-3"
                                    asp-controller="Account"
                                    asp-action="Auth">
                                     Logowanie
                                 </a>
+
                             </li>
                         }
 
                     </ul>
 
                 </div>
+
             </div>
+
         </nav>
     </header>
     <div class="container">
