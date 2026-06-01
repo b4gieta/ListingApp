@@ -26,7 +26,9 @@ namespace ListingApp.ViewModels
         public int CategoryId { get; set; }
 
         public List<SelectListItem> Categories { get; set; } = new();
-        public IFormFile? Image { get; set; }
-        public string? ExistingImage { get; set; }
+
+        public List<ListingImageViewModel> ExistingImages { get; set; } = new();
+        public List<int> ImagesToDelete { get; set; } = new();
+        public List<IFormFile> NewImages { get; set; } = new();
     }
 }

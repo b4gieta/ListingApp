@@ -23,6 +23,7 @@ namespace ListingApp.Controllers
             var listings = _db.Listings
                 .Include(a => a.Category)
                 .Include(a => a.User)
+                .Include(a => a.Images)
                 .OrderByDescending(a => a.CreatedAt)
                 .Select(a => new ListingListItemViewModel
                 {
@@ -33,7 +34,7 @@ namespace ListingApp.Controllers
                     CategoryName = a.Category.Name,
                     Username = a.User.Login,
                     CreatedAt = a.CreatedAt,
-                    ImageFileName = a.ImageFileName
+                    ImageFileName = a.Images.FirstOrDefault() != null ? a.Images.FirstOrDefault()!.FileName : null
                 })
                 .ToList();
 

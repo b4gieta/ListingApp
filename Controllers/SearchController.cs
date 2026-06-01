@@ -25,7 +25,8 @@ namespace ListingApp.Controllers
         {
             IQueryable<Listing> listingsQuery = _context.Listings
                 .Include(x => x.Category)
-                .Include(x => x.User);
+                .Include(x => x.User)
+                .Include(x => x.Images);
 
             if (!string.IsNullOrWhiteSpace(query)) listingsQuery = listingsQuery.Where(x => x.Title.ToLower().Contains(query.ToLower()));
 
@@ -48,7 +49,7 @@ namespace ListingApp.Controllers
                     CategoryName = x.Category.Name,
                     Username = x.User.Login,
                     CreatedAt = x.CreatedAt,
-                    ImageFileName = x.ImageFileName
+                    ImageFileName = x.Images.FirstOrDefault() != null ? x.Images.FirstOrDefault()!.FileName : null
                 })
                 .ToListAsync();
 

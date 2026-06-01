@@ -5,154 +5,101 @@
 }
 
 <div class="container mt-4">
-
     <div class="row justify-content-center">
-
         <div class="col-lg-8">
-
             <div class="card border-0 shadow-sm">
-
                 <div class="card-body p-4">
 
-                    <h1 class="h3 mb-4">
-                        Edytuj ogłoszenie
-                    </h1>
+                    <h1 class="h3 mb-4">Edytuj ogłoszenie</h1>
 
                     <form asp-action="Edit"
                           method="post"
                           enctype="multipart/form-data">
 
                         <div class="mb-4">
-
-                            <label asp-for="Title"
-                                   class="form-label fw-semibold">
-                                Nazwa
-                            </label>
-
-                            <input asp-for="Title"
-                                   class="form-control form-control-lg" />
-
-                            <span asp-validation-for="Title"
-                                  class="text-danger small"></span>
-
+                            <label asp-for="Title" class="form-label fw-semibold">Nazwa</label>
+                            <input asp-for="Title" class="form-control form-control-lg" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-4">
-
-                            <label asp-for="Description"
-                                   class="form-label fw-semibold">
-                                Opis
-                            </label>
-
-                            <textarea asp-for="Description"
-                                      class="form-control"
-                                      rows="6"></textarea>
-
-                            <span asp-validation-for="Description"
-                                  class="text-danger small"></span>
-
+                            <label asp-for="Description" class="form-label fw-semibold">Opis</label>
+                            <textarea asp-for="Description" class="form-control" rows="6"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
                         <div class="row">
-
                             <div class="col-md-6">
-
                                 <div class="mb-4">
-
-                                    <label asp-for="Price"
-                                           class="form-label fw-semibold">
-                                        Cena
-                                    </label>
-
-                                    <input asp-for="Price"
-                                           type="number"
-                                           step="0.01"
-                                           class="form-control" />
-
-                                    <span asp-validation-for="Price"
-                                          class="text-danger small"></span>
-
+                                    <label asp-for="Price" class="form-label fw-semibold">Cena</label>
+                                    <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger small"></span>
                                 </div>
-
                             </div>
-
                             <div class="col-md-6">
-
                                 <div class="mb-4">
-
-                                    <label asp-for="CategoryId"
-                                           class="form-label fw-semibold">
-                                        Kategoria
-                                    </label>
-
-                                    <select asp-for="CategoryId"
-                                            asp-items="Model.Categories"
-                                            class="form-select">
-                                    </select>
-
-                                    <span asp-validation-for="CategoryId"
-                                          class="text-danger small"></span>
-
+                                    <label asp-for="CategoryId" class="form-label fw-semibold">Kategoria</label>
+                                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select"></select>
+                                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
                                 </div>
-
                             </div>
-
                         </div>
 
                         <div class="mb-4">
-
-                            <label asp-for="Location"
-                                   class="form-label fw-semibold">
-                                Lokalizacja
-                            </label>
-
-                            <input asp-for="Location"
-                                   class="form-control" />
-
-                            <span asp-validation-for="Location"
-                                  class="text-danger small"></span>
-
+                            <label asp-for="Location" class="form-label fw-semibold">Lokalizacja</label>
+                            <input asp-for="Location" class="form-control" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-4">
-
-                            <label asp-for="Image"
-                                   class="form-label fw-semibold">
-                                Zdjęcie
-                            </label>
-
-                            <input asp-for="Image"
-                                   type="file"
+                            <label class="form-label fw-semibold">Zdjęcia</label>
+                            <input type="file"
+                                   name="NewImages"
                                    accept="image/*"
+                                   multiple
                                    class="form-control"
                                    id="imageInput" />
+                        </div>
+
+                        <div class="row g-3 mb-4" id="allImagesContainer">
+
+                            @foreach (var image in Model.ExistingImages)
+                            {
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <img src="/uploads/@image.FileName"
+                                             class="card-img-top"
+                                             style="object-fit: cover; height: 160px;" />
+                                        <div class="card-body p-2">
+                                            <div class="form-check">
+                                                <input type="checkbox"
+                                                       name="ImagesToDelete"
+                                                       value="@image.Id"
+                                                       class="form-check-input"
+                                                       id="delete-@image.Id"
+                                                       onchange="toggleDeleteOverlay(this)" />
+                                                <label class="form-check-label text-danger small fw-semibold"
+                                                       for="delete-@image.Id">
+                                                    Usuń
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
 
                         </div>
 
-                        <div class="mb-4">
+                        <div class="row g-3 mb-4" id="newImagesContainer"></div>
 
-                            <img id="imagePreview"
-                                 src="@(Model.ExistingImage != null ? Url.Content("~/uploads/" + Model.ExistingImage) : "")"
-                                 class="img-fluid rounded border"
-                                 style="max-height:400px; @(Model.ExistingImage != null ? "" : "display:none;")" />
-
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary btn-lg">
-                            Zapisz zmiany
-                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">Zapisz zmiany</button>
 
                     </form>
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 @section Scripts {
@@ -160,27 +107,71 @@
 
     <script>
         const imageInput = document.getElementById("imageInput");
-        const imagePreview = document.getElementById("imagePreview");
+        const newContainer = document.getElementById("newImagesContainer");
+
+        let newFilesArray = [];
 
         imageInput.addEventListener("change", function ()
         {
-            const file = this.files[0];
-
-            if (!file)
-            {
-                imagePreview.style.display = "none";
-                return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = function (e)
-            {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = "block";
-            };
-
-            reader.readAsDataURL(file);
+            newFilesArray = [...newFilesArray, ...Array.from(this.files)];
+            this.value = "";
+            renderNewCards();
         });
+
+        function renderNewCards()
+        {
+            newContainer.innerHTML = "";
+
+            newFilesArray.forEach(function (file, index)
+            {
+                const reader = new FileReader();
+
+                reader.onload = function (e)
+                {
+                    const col = document.createElement("div");
+                    col.className = "col-md-4";
+
+                    col.innerHTML = `
+                        <div class="card h-100">
+                            <img src="${e.target.result}"
+                                 class="card-img-top"
+                                 style="object-fit: cover; height: 160px;" />
+                            <div class="card-body p-2">
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="removeNewImage(${index})">
+                                    Usuń
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    newContainer.appendChild(col);
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            syncFilesToInput();
+        }
+
+        function removeNewImage(index)
+        {
+            newFilesArray.splice(index, 1);
+            renderNewCards();
+        }
+
+        function toggleDeleteOverlay(checkbox)
+        {
+            const card = checkbox.closest(".col-md-4");
+            card.classList.toggle("opacity-50", checkbox.checked);
+        }
+
+        function syncFilesToInput()
+        {
+            const dt = new DataTransfer();
+            newFilesArray.forEach(f => dt.items.add(f));
+            imageInput.files = dt.files;
+        }
     </script>
 }

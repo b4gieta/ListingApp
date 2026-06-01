@@ -60,21 +60,6 @@ namespace ListingApp.Controllers
             var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null) return RedirectToAction("Auth", "Account");
 
-            string? fileName = null;
-
-            if (vm.Image != null)
-            {
-                string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-                string ext = Path.GetExtension(vm.Image.FileName);
-                fileName = $"{Guid.NewGuid()}{ext}";
-                string path = Path.Combine(_environment.WebRootPath, "uploads", fileName);
-
-                using var stream = new FileStream(path, FileMode.Create);
-                vm.Image.CopyTo(stream);
-            }
-
             var listing = new Listing
             {
                 Title = vm.Title,
@@ -82,9 +67,27 @@ namespace ListingApp.Controllers
                 Price = vm.Price,
                 Location = vm.Location,
                 CategoryId = vm.CategoryId,
-                UserId = user.UserId,
-                ImageFileName = fileName
+                UserId = user.UserId
             };
+
+            string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            foreach (var image in vm.NewImages)
+            {
+                string ext = Path.GetExtension(image.FileName);
+                string fileName = $"{Guid.NewGuid()}{ext}";
+                string path = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(path, FileMode.Create);
+                image.CopyTo(stream);
+
+                listing.Images.Add(new ListingImage
+                {
+                    FileName = fileName
+                });
+            }
 
             _db.Listings.Add(listing);
             _db.SaveChanges();
@@ -118,7 +121,9 @@ namespace ListingApp.Controllers
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
-            var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
+            var listing = _db.Listings
+                .Include(l => l.Images)
+                .FirstOrDefault(l => l.Id == id);
             if (listing == null) return RedirectToAction("Index", "Home");
 
             if (listing.UserId.ToString() != userIdString) return RedirectToAction("Index", "Home");
@@ -132,8 +137,15 @@ namespace ListingApp.Controllers
                 Location = listing.Location,
                 CategoryId = listing.CategoryId,
                 Categories = GetCategories(),
-                ExistingImage = listing.ImageFileName
-            };
+
+                ExistingImages = listing.Images
+                   .Select(i => new ListingImageViewModel
+                   {
+                       Id = i.Id,
+                       FileName = i.FileName
+                   })
+                   .ToList()
+                    };
 
             return View(vm);
         }
@@ -144,15 +156,25 @@ namespace ListingApp.Controllers
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Auth", "Account");
 
-            var listing = _db.Listings.FirstOrDefault(a => a.Id == id);
+            var listing = _db.Listings
+                .Include(l => l.Images)
+                .FirstOrDefault(l => l.Id == id);
 
             if (listing == null) return RedirectToAction("Index", "Home");
-
             if (listing.UserId.ToString() != userIdString) return RedirectToAction("Index", "Home");
 
             if (!ModelState.IsValid)
             {
                 vm.Categories = GetCategories();
+
+                vm.ExistingImages = listing.Images
+                    .Select(i => new ListingImageViewModel
+                    {
+                        Id = i.Id,
+                        FileName = i.FileName
+                    })
+                    .ToList();
+
                 return View(vm);
             }
 
@@ -163,25 +185,30 @@ namespace ListingApp.Controllers
             listing.CategoryId = vm.CategoryId;
             listing.LastEditedAt = DateTime.UtcNow;
 
-            if (vm.Image != null)
+            string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            if (vm.ImagesToDelete.Any())
             {
-                string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                var imagesToDelete = listing.Images
+                    .Where(i => vm.ImagesToDelete.Contains(i.Id))
+                    .ToList();
 
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-                if (!string.IsNullOrEmpty(listing.ImageFileName))
+                foreach (var image in imagesToDelete)
                 {
-                    string oldPath = Path.Combine(uploadsFolder, listing.ImageFileName);
-                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                    string path = Path.Combine(uploadsFolder, image.FileName);
+                    if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+                    _db.ListingImages.Remove(image);
                 }
+            }
 
-                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(vm.Image.FileName)}";
+            foreach (var image in vm.NewImages)
+            {
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
                 string path = Path.Combine(uploadsFolder, fileName);
-
                 using var stream = new FileStream(path, FileMode.Create);
-                vm.Image.CopyTo(stream);
-
-                listing.ImageFileName = fileName;
+                image.CopyTo(stream);
+                listing.Images.Add(new ListingImage { FileName = fileName });
             }
 
             _db.SaveChanges();
@@ -195,6 +222,7 @@ namespace ListingApp.Controllers
             var listing = _db.Listings
                 .Include(a => a.Category)
                 .Include(a => a.User)
+                .Include(a => a.Images)
                 .FirstOrDefault(a => a.Id == id);
 
             if (listing == null) return RedirectToAction("Index", "Home");
@@ -210,7 +238,14 @@ namespace ListingApp.Controllers
                 LastEditedAt = listing.LastEditedAt,
                 CategoryName = listing.Category.Name,
                 Username = listing.User.Login,
-                ImageFileName = listing.ImageFileName
+                ExistingImages = listing.Images
+                   .Select(i => new ListingImageViewModel
+                   {
+                       Id = i.Id,
+                       FileName = i.FileName
+                   })
+                   .ToList()
+
             };
 
             return View(vm);
