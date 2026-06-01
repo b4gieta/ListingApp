@@ -13,6 +13,6 @@
         public string CategoryName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
 
-        public string? ImageFileName { get; set; }
+        public List<ListingImageViewModel> ExistingImages { get; set; } = new();
     }
 }

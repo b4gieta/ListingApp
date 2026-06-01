@@ -116,26 +116,22 @@
 
                         <div class="mb-4">
 
-                            <label asp-for="Image"
+                            <label asp-for="NewImages"
                                    class="form-label fw-semibold">
-                                Zdjęcie
+                                Zdjęcia
                             </label>
 
-                            <input asp-for="Image"
+                            <input asp-for="NewImages"
                                    type="file"
                                    accept="image/*"
+                                   multiple
                                    class="form-control"
                                    id="imageInput" />
 
                         </div>
 
-                        <div class="mb-4">
-
-                            <img id="imagePreview"
-                                 src="@(Model.ExistingImage != null ? Url.Content("~/uploads/" + Model.ExistingImage) : "")"
-                                 class="img-fluid rounded border"
-                                 style="max-height:400px; @(Model.ExistingImage != null ? "" : "display:none;")" />
-
+                        <div id="imagePreviewContainer"
+                             class="row g-3">
                         </div>
 
                         <button type="submit"
@@ -160,27 +156,31 @@
 
     <script>
         const imageInput = document.getElementById("imageInput");
-        const imagePreview = document.getElementById("imagePreview");
+        const container = document.getElementById("imagePreviewContainer");
 
         imageInput.addEventListener("change", function ()
         {
-            const file = this.files[0];
+            container.innerHTML = "";
 
-            if (!file)
+            for (const file of this.files)
             {
-                imagePreview.style.display = "none";
-                return;
+                const reader = new FileReader();
+
+                reader.onload = function (e)
+                {
+                    const col = document.createElement("div");
+                    col.className = "col-md-4";
+
+                    col.innerHTML = `
+                        <img src="${e.target.result}"
+                             class="img-fluid rounded border" />
+                    `;
+
+                    container.appendChild(col);
+                };
+
+                reader.readAsDataURL(file);
             }
-
-            const reader = new FileReader();
-
-            reader.onload = function (e)
-            {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = "block";
-            };
-
-            reader.readAsDataURL(file);
         });
     </script>
 }
