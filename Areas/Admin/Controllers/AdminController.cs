@@ -1,11 +1,13 @@
-﻿using ListingApp.Data;
+﻿using ListingApp.Controllers;
+using ListingApp.Data;
 using ListingApp.Models;
 using ListingApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ListingApp.Controllers
+namespace ListingApp.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class AdminController : BaseController
     {
         private readonly AppDbContext _context;
@@ -18,7 +20,7 @@ namespace ListingApp.Controllers
         public async Task<IActionResult> Panel()
         {
             if (!EnsureAdmin())
-                return RedirectToAction("Auth", "Account");
+                return RedirectToAction("Auth", "Account", new { area = "" });
 
             var model = new AdminDashboardViewModel
             {
@@ -43,8 +45,8 @@ namespace ListingApp.Controllers
 
             return View(model);
         }
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> BlockUser(int id)
         {
             if (!EnsureAdmin())
@@ -63,6 +65,7 @@ namespace ListingApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnblockUser(int id)
         {
             if (!EnsureAdmin())

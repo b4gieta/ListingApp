@@ -10,7 +10,6 @@
 </head>
 <body>
     <header>
-
         @using ListingApp.Models
         @{
             var login = Context?.Session?.GetString("Login");
@@ -50,6 +49,7 @@
                             <li class="nav-item">
 
                                 <a class="nav-link"
+                                   asp-area="Admin"
                                    asp-controller="Admin"
                                    asp-action="Panel">
                                     Panel Administracyjny
@@ -75,6 +75,7 @@
                             <li class="nav-item">
 
                                 <a class="nav-link"
+                                   asp-area=""
                                    asp-controller="Account"
                                    asp-action="Profile">
                                     Profil
@@ -85,6 +86,7 @@
                             <li class="nav-item">
 
                                 <a class="nav-link"
+                                   asp-area=""
                                    asp-controller="Listing"
                                    asp-action="Create">
                                     Dodaj ogłoszenie
@@ -95,6 +97,7 @@
                             <li class="nav-item">
 
                                 <a class="btn btn-outline-danger btn-sm px-3"
+                                   asp-area=""
                                    asp-controller="Account"
                                    asp-action="Logout">
                                     Wyloguj

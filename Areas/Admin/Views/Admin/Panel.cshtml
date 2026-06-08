@@ -13,7 +13,6 @@
         </h1>
 
     </div>
-
     <div class="row g-4 mb-5">
 
         <div class="col-md-6">
@@ -185,40 +184,36 @@
                                 </td>
 
                                 <td class="text-end">
-
                                     @if (user.IsActive)
                                     {
-                                        <form asp-action="BlockUser"
+                                        <form asp-area="Admin"
+                                              asp-controller="Admin"
+                                              asp-action="BlockUser"
                                               method="post">
 
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="@user.UserId" />
+                                            @Html.AntiForgeryToken()
 
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger">
+                                            <input type="hidden" name="id" value="@user.UserId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 Zablokuj
                                             </button>
-
                                         </form>
                                     }
                                     else
                                     {
-                                        <form asp-action="UnblockUser"
+                                        <form asp-area="Admin"
+                                              asp-controller="Admin"
+                                              asp-action="UnblockUser"
                                               method="post">
 
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="@user.UserId" />
+                                            @Html.AntiForgeryToken()
 
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-success">
+                                            <input type="hidden" name="id" value="@user.UserId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
                                                 Odblokuj
                                             </button>
-
                                         </form>
                                     }
-
                                 </td>
 
                             </tr>
