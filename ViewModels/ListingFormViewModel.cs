@@ -16,6 +16,7 @@ namespace ListingApp.ViewModels
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Cena jest wymagana")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Cena musi być większa niż 0 zł")]
         public double Price { get; set; }
 
         [Required(ErrorMessage = "Lokalizacja jest wymagana")]
@@ -29,6 +30,6 @@ namespace ListingApp.ViewModels
 
         public List<ListingImageViewModel> ExistingImages { get; set; } = new();
         public List<int> ImagesToDelete { get; set; } = new();
-        public List<IFormFile> NewImages { get; set; } = new();
+        public List<IFormFile>? NewImages { get; set; } = new();
     }
 }

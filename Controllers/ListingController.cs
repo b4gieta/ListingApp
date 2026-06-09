@@ -4,6 +4,7 @@ using ListingApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace ListingApp.Controllers
 {
@@ -11,6 +12,7 @@ namespace ListingApp.Controllers
     {
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _environment;
+        private readonly HttpClient _http = new();
 
         public ListingController(AppDbContext db, IWebHostEnvironment environment)
         {
@@ -249,6 +251,49 @@ namespace ListingApp.Controllers
             };
 
             return View(vm);
+        }
+
+        private const string GeoNamesUser = "b4gieta";
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2) return Json(new List<string>());
+
+            _http.DefaultRequestHeaders.UserAgent.TryParseAdd("MvcCityApp/1.0");
+
+            var url = $"http://api.geonames.org/searchJSON" +
+                      $"?name_startsWith={Uri.EscapeDataString(query)}" +
+                      $"&country=PL" +
+                      $"&featureClass=P" +
+                      $"&orderby=population" +
+                      $"&maxRows=10" +
+                      $"&lang=pl" +
+                      $"&username={GeoNamesUser}";
+
+            var response = await _http.GetAsync(url);
+            if (!response.IsSuccessStatusCode) return Json(new List<string>());
+
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<GeoNamesResponse>(json);
+
+            var cities = result?.geonames?
+                .Select(g => g.name)
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Distinct()
+                .ToList() ?? new List<string>();
+
+            return Json(cities);
+        }
+
+        private class GeoNamesResponse
+        {
+            public List<GeoNamesEntry>? geonames { get; set; }
+        }
+
+        private class GeoNamesEntry
+        {
+            public string? name { get; set; }
         }
     }
 }

@@ -4,6 +4,13 @@
     ViewData["Title"] = Model.Title;
 }
 
+@{
+    var login = Context?.Session?.GetString("Login");
+    var role = Context?.Session?.GetString("UserRole");
+    var isAdmin = (!string.IsNullOrEmpty(role) && role == Role.Admin.ToString());
+	var isOwner = (!string.IsNullOrEmpty(login) && login == Model.Username);
+}
+
 <div class="container mt-4">
 
     <div class="row g-4">
@@ -122,36 +129,39 @@
 
             </div>
 
-            <div class="card border-0 shadow-sm">
+            @if (isAdmin || isOwner)
+            {
+                <div class="card border-0 shadow-sm">
 
-                <div class="card-body">
+                    <div class="card-body">
 
-                    <div class="d-grid gap-2">
+                        <div class="d-grid gap-2">
 
-                        <a asp-controller="Listing"
-                           asp-action="Edit"
-                           asp-route-id="@Model.Id"
-                           class="btn btn-warning">
-                            Edytuj
-                        </a>
+                            <a asp-controller="Listing"
+                               asp-action="Edit"
+                               asp-route-id="@Model.Id"
+                               class="btn btn-warning">
+                                Edytuj
+                            </a>
 
-                        <form asp-controller="Listing"
-                              asp-action="Delete"
-                              asp-route-id="@Model.Id"
-                              method="post">
+                            <form asp-controller="Listing"
+                                  asp-action="Delete"
+                                  asp-route-id="@Model.Id"
+                                  method="post">
 
-                            <button type="submit"
-                                    class="btn btn-danger w-100">
-                                Usuń
-                            </button>
+                                <button type="submit"
+                                        class="btn btn-danger w-100">
+                                    Usuń
+                                </button>
 
-                        </form>
+                            </form>
+
+                        </div>
 
                     </div>
 
                 </div>
-
-            </div>
+            }
 
         </div>
 
